@@ -646,7 +646,7 @@ _quiet = False
 
 # The allowed line length of files.
 # This is set by --linelength flag.
-_line_length = 80
+_line_length = 140
 
 try:
   unicode
@@ -3834,13 +3834,6 @@ def CheckBracesSpacing(filename, clean_lines, linenum, nesting_state, error):
     for offset in xrange(endlinenum + 1,
                          min(endlinenum + 3, clean_lines.NumLines() - 1)):
       trailing_text += clean_lines.elided[offset]
-    # We also suppress warnings for `uint64_t{expression}` etc., as the style
-    # guide recommends brace initialization for integral types to avoid
-    # overflow/truncation.
-    if (not Match(r'^[\s}]*[{.;,)<>\]:]', trailing_text)
-        and not _IsType(clean_lines, nesting_state, leading_text)):
-      error(filename, linenum, 'whitespace/braces', 5,
-            'Missing space before {')
 
   # Make sure '} else {' has spaces.
   if Search(r'}else', line):
@@ -3970,7 +3963,12 @@ def CheckBraces(filename, clean_lines, linenum, error):
   """
 
   line = clean_lines.elided[linenum]        # get rid of comments and strings
+  if (Search(r'(?=^(.*)\n{0}{)(?![ \t]*{)', line) and
+        not Search(r'=[ ]*{', line)):
+      error(filename, linenum, 'whitespace/braces', 4, 
+      '{ should almost always be at the beginning of a line')
 
+  #(?=^(.*)\n{0}{)(?![ \t]*{)
   if Match(r'\s*{\s*$', line):
     # We allow an open brace to start a line in the case where someone is using
     # braces in a block to explicitly create a new scope, which is commonly used
@@ -3982,11 +3980,15 @@ def CheckBraces(filename, clean_lines, linenum, error):
     # following line if it is part of an array initialization and would not fit
     # within the 80 character limit of the preceding line.
     prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
-    if (not Search(r'[,;:}{(]\s*$', prevline) and
-        not Match(r'\s*#', prevline) and
-        not (GetLineWidth(prevline) > _line_length - 2 and '[]' in prevline)):
+    # if (not Search(r'[,;:}(]\s*$', prevline) and
+    #     not Search(r'^.*\n+{', line) and
+    #     not Match(r'\s*#', prevline) and
+    #     not (GetLineWidth(prevline) > _line_length - 2 and '[]' in prevline)):
+    #   error(filename, linenum, 'whitespace/braces', 4,
+    #         '{ should almost always be at the end of the previous line')
+    if (not Search(r'^[ \t]*{', line)):
       error(filename, linenum, 'whitespace/braces', 4,
-            '{ should almost always be at the end of the previous line')
+             '{ should almost at the beginning of a line')
 
   # An else clause should be on the same line as the preceding closing brace.
   if Match(r'\s*else\b\s*(?:if\b|\{|$)', line):
