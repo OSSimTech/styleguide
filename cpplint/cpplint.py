@@ -3355,15 +3355,6 @@ def CheckComment(line, filename, linenum, next_line_start, error):
   if commentpos != -1:
     # Check if the // may be in quotes.  If so, ignore it
     if re.sub(r'\\.', '', line[0:commentpos]).count('"') % 2 == 0:
-      # Allow one space for new scopes, two spaces otherwise:
-      if (not (Match(r'^.*{ *//', line) and next_line_start == commentpos) and
-          ((commentpos >= 1 and
-            line[commentpos-1] not in string.whitespace) or
-           (commentpos >= 2 and
-            line[commentpos-2] not in string.whitespace))):
-        error(filename, linenum, 'whitespace/comments', 2,
-              'At least two spaces is best between code and comments')
-
       # Checks for common mistakes in TODO comments.
       comment = line[commentpos:]
       match = _RE_PATTERN_TODO.match(comment)
@@ -3993,9 +3984,6 @@ def CheckBraces(filename, clean_lines, linenum, error):
   # An else clause should be on the same line as the preceding closing brace.
   if Match(r'\s*else\b\s*(?:if\b|\{|$)', line):
     prevline = GetPreviousNonBlankLine(clean_lines, linenum)[0]
-    if Match(r'\s*}\s*$', prevline):
-      error(filename, linenum, 'whitespace/newline', 4,
-            'An else should appear on the same line as the preceding }')
 
   # If braces come on one side of an else, they should be on both.
   # However, we have to worry about "else if" that spans multiple lines!
