@@ -3955,7 +3955,8 @@ def CheckBraces(filename, clean_lines, linenum, error):
 
   line = clean_lines.elided[linenum]        # get rid of comments and strings
   if (Search(r'(?=^(.*)\n{0}{)(?![ \t]*{)', line) and
-        not Search(r'=[ ]*{', line)):
+        not Search(r'=[ ]*{', line) and
+        not Search(r'(.*){(.*)}', line)):
       error(filename, linenum, 'whitespace/braces', 4, 
       '{ should almost always be at the beginning of a line')
 
@@ -4549,7 +4550,7 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, nesting_state,
   line = raw_lines[linenum]
   prev = raw_lines[linenum - 1] if linenum > 0 else ''
 
-  if line.find('    ') != -1:
+  if Search(r'^[ ]+', line):
     error(filename, linenum, 'whitespace/tab', 1,
           'Spaces found; better to use tabs')
 
