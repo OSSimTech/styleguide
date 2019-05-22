@@ -646,7 +646,7 @@ _quiet = False
 
 # The allowed line length of files.
 # This is set by --linelength flag.
-_line_length = 140
+_line_length = 200
 
 try:
   unicode
@@ -3026,15 +3026,6 @@ def CheckForNonStandardConstructs(filename, clean_lines, linenum,
 
   # For the rest, work with both comments and strings removed.
   line = clean_lines.elided[linenum]
-
-  if Search(r'\b(const|volatile|void|char|short|int|long'
-            r'|float|double|signed|unsigned'
-            r'|schar|u?int8|u?int16|u?int32|u?int64)'
-            r'\s+(register|static|extern|typedef)\b',
-            line):
-    error(filename, linenum, 'build/storage_class', 5,
-          'Storage-class specifier (static, extern, typedef, etc) should be '
-          'at the beginning of the declaration.')
 
   if Match(r'\s*#\s*endif\s*[^/\s]+', line):
     error(filename, linenum, 'build/endif_comment', 5,
