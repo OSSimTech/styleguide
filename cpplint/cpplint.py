@@ -4559,9 +4559,9 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, nesting_state,
   line = raw_lines[linenum]
   prev = raw_lines[linenum - 1] if linenum > 0 else ''
 
-  if line.find('\t') != -1:
+  if line.find('    ') != -1:
     error(filename, linenum, 'whitespace/tab', 1,
-          'Tab found; better to use spaces')
+          'Spaces found; better to use tabs')
 
   # One or three blank spaces at the beginning of the line is weird; it's
   # hard to reconcile that with 2-space indents.
